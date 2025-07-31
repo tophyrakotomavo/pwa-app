@@ -1,49 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { InstallAppChecker } from "./_components/install-app-checker";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
-}
-
-export default function Home() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setIsInstallable(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handler as EventListener);
-
-    return () =>
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handler as EventListener
-      );
-  }, []);
-
-  const handleInstall = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      console.log("User accepted the install prompt");
-    } else {
-      console.log("User dismissed the install prompt");
-    }
-
-    setDeferredPrompt(null);
-    setIsInstallable(false);
-  };
-
+export const HomePage = () => {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -92,14 +50,7 @@ export default function Home() {
           >
             Read our docs
           </a>
-          {isInstallable && (
-            <button
-              onClick={handleInstall}
-              className="rounded-full border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            >
-              Install App
-            </button>
-          )}
+          <InstallAppChecker />
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
@@ -151,4 +102,6 @@ export default function Home() {
       </footer>
     </div>
   );
-}
+};
+
+export default HomePage;
