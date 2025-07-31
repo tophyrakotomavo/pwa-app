@@ -24,7 +24,7 @@ export const InstallAppChecker = () => {
     return () =>
       window.removeEventListener(
         "beforeinstallprompt",
-        handler as EventListener
+        handler as EventListener,
       );
   }, []);
 
